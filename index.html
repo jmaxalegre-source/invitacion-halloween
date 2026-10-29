@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halloween Exclusive Night - Digital VIP Pass</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Montserrat:wght@200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#09090b',
+                        'obsidian-card': '#121215',
+                        gold: {
+                            light: '#fef08a',
+                            DEFAULT: '#d4af37',
+                            dark: '#aa7c11',
+                            satin: '#e2c044',
+                        },
+                        amber: {
+                            glow: '#ff8c00',
+                        }
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        playfair: ['Playfair Display', 'serif'],
+                        sans: ['Montserrat', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 3s infinite ease-in-out',
+                        'float': 'float 6s infinite ease-in-out',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '0.4', filter: 'drop-shadow(0 0 15px rgba(212, 175, 55, 0.3))' },
+                            '50%': { opacity: '0.8', filter: 'drop-shadow(0 0 25px rgba(212, 175, 55, 0.6))' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050507;
+            color: #e5e5e5;
+            overflow-x: hidden;
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #fff3a1 0%, #d4af37 40%, #aa7c11 70%, #fef08a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glass-card {
+            background: rgba(18, 18, 22, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), inset 0 0 15px rgba(212, 175, 55, 0.05);
+        }
+
+        .btn-gold-glow {
+            position: relative;
+            background: linear-gradient(135deg, #e2c044 0%, #bf9527 50%, #8c670f 100%);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .btn-gold-glow:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px -5px rgba(212, 175, 55, 0.5), 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050507; }
+        ::-webkit-scrollbar-thumb { background: #2a220b; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #d4af37; }
+    </style>
+</head>
+<body class="font-sans antialiased selection:bg-gold selection:text-black">
+
+    <!-- Particle Background Canvas -->
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="fixed top-0 left-1/4 w-[500px] h-[500px] bg-purple-900/10 rounded-full filter blur-[120px] pointer-events-none z-0"></div>
+    <div class="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-amber-900/10 rounded-full filter blur-[150px] pointer-events-none z-0"></div>
+
+    <div class="relative z-10 max-w-3xl mx-auto px-4 py-8 sm:py-12 flex flex-col items-center">
+
+        <!-- Header / Audio Control -->
+        <div class="w-full flex justify-between items-center mb-6 px-2">
+            <span class="text-xs uppercase tracking-[0.3em] text-gold/70 font-cinzel flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Invitación Exclusiva
+            </span>
+            <button id="musicToggle" class="flex items-center gap-2 text-xs font-cinzel text-gold/80 hover:text-gold border border-gold/30 rounded-full px-4 py-1.5 transition-all bg-black/40 backdrop-blur-md">
+                <i class="fa-solid fa-music text-gold"></i>
+                <span id="musicStatus">Música OFF</span>
+            </button>
+        </div>
+
+        <!-- MAIN CARD CONTAINER -->
+        <main class="w-full glass-card rounded-2xl p-6 sm:p-10 relative overflow-hidden text-center border border-gold/30">
+            
+            <div class="absolute top-3 left-3 w-8 h-8 border-t-2 border-l-2 border-gold/50 pointer-events-none"></div>
+            <div class="absolute top-3 right-3 w-8 h-8 border-t-2 border-r-2 border-gold/50 pointer-events-none"></div>
+            <div class="absolute bottom-3 left-3 w-8 h-8 border-b-2 border-l-2 border-gold/50 pointer-events-none"></div>
+            <div class="absolute bottom-3 right-3 w-8 h-8 border-b-2 border-r-2 border-gold/50 pointer-events-none"></div>
+
+            <p class="font-cinzel text-xs sm:text-sm tracking-[0.4em] uppercase text-gold/80 mb-4 animate-pulse">
+                Estás invitado a
+            </p>
+
+            <div class="relative w-full max-w-lg mx-auto mb-6 rounded-xl overflow-hidden border border-gold/30 shadow-2xl group">
+                <img 
+                    src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000&auto=format&fit=crop" 
+                    alt="Masquerade Night" 
+                    class="w-full h-64 sm:h-80 object-cover object-center filter brightness-90 contrast-110 transition-transform duration-700 group-hover:scale-105"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-obsidian via-obsidian/40 to-transparent"></div>
+                <div class="absolute bottom-4 left-0 right-0 px-4">
+                    <span class="inline-block text-[10px] sm:text-xs font-cinzel tracking-[0.3em] uppercase bg-gold/20 text-gold border border-gold/40 px-3 py-1 rounded-full backdrop-blur-md">
+                        VIP Private Party
+                    </span>
+                </div>
+            </div>
+
+            <h1 class="font-cinzel text-3xl sm:text-5xl font-black tracking-wider leading-none mb-2 gold-gradient-text drop-shadow-md">
+                HALLOWEEN
+            </h1>
+            <h2 class="font-cinzel text-lg sm:text-2xl font-light tracking-[0.35em] text-gray-200 mb-6 uppercase border-b border-gold/20 pb-4 max-w-md mx-auto">
+                EXCLUSIVE NIGHT
+            </h2>
+
+            <p class="font-playfair italic text-lg sm:text-xl text-gold/90 mb-8 font-serif uppercase tracking-widest">
+                "UNA NOCHE DE MISTERIO"
+            </p>
+
+            <!-- COUNTDOWN TIMER -->
+            <div class="mb-8 p-4 rounded-xl bg-black/50 border border-gold/20 max-w-md mx-auto">
+                <p class="text-[10px] font-cinzel tracking-[0.25em] text-gray-400 uppercase mb-3">Cuenta Regresiva VIP</p>
+                <div class="grid grid-cols-4 gap-2 text-center" id="countdown">
+                    <div class="bg-obsidian/80 p-2 rounded-lg border border-gold/10">
+                        <span id="days" class="block font-cinzel text-xl sm:text-2xl font-bold text-gold">00</span>
+                        <span class="text-[9px] uppercase tracking-wider text-gray-400">Días</span>
+                    </div>
+                    <div class="bg-obsidian/80 p-2 rounded-lg border border-gold/10">
+                        <span id="hours" class="block font-cinzel text-xl sm:text-2xl font-bold text-gold">00</span>
+                        <span class="text-[9px] uppercase tracking-wider text-gray-400">Horas</span>
+                    </div>
+                    <div class="bg-obsidian/80 p-2 rounded-lg border border-gold/10">
+                        <span id="minutes" class="block font-cinzel text-xl sm:text-2xl font-bold text-gold">00</span>
+                        <span class="text-[9px] uppercase tracking-wider text-gray-400">Min</span>
+                    </div>
+                    <div class="bg-obsidian/80 p-2 rounded-lg border border-gold/10">
+                        <span id="seconds" class="block font-cinzel text-xl sm:text-2xl font-bold text-gold">00</span>
+                        <span class="text-[9px] uppercase tracking-wider text-gray-400">Seg</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADD TO CALENDAR BUTTON -->
+            <div class="mb-8">
+                <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Halloween+Exclusive+Night&dates=20261031T220000/20261101T050000&details=Una+Noche+de+Misterio.+Disfraz+Obligatorio.&location=Calle+33+%23286,+San+Isidro"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="inline-flex items-center gap-2 text-xs font-cinzel text-gold hover:text-white border border-gold/40 hover:border-gold px-5 py-2 rounded-full transition-all bg-black/40 backdrop-blur-sm">
+                    <i class="fa-regular fa-calendar-plus"></i>
+                    <span>Agendar en Google Calendar</span>
+                </a>
+            </div>
+
+            <!-- EVENT DETAILS GRID -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 text-center">
+                <div class="p-4 rounded-xl bg-obsidian-card/80 border border-gold/20 flex flex-col items-center justify-center">
+                    <i class="fa-regular fa-calendar-days text-2xl text-gold mb-2"></i>
+                    <span class="text-[10px] uppercase font-cinzel tracking-widest text-gray-400">Fecha</span>
+                    <span class="font-cinzel text-sm font-semibold text-white mt-1">SÁBADO</span>
+                    <span class="font-cinzel text-2xl font-bold text-gold my-0.5">31</span>
+                    <span class="text-xs font-sans text-gray-300">OCTUBRE DE 2026</span>
+                </div>
+
+                <div class="p-4 rounded-xl bg-obsidian-card/80 border border-gold/20 flex flex-col items-center justify-center">
+                    <i class="fa-regular fa-clock text-2xl text-gold mb-2"></i>
+                    <span class="text-[10px] uppercase font-cinzel tracking-widest text-gray-400">Horario</span>
+                    <span class="text-xs uppercase tracking-wider text-gray-300 mt-2">A partir de las</span>
+                    <span class="font-cinzel text-2xl font-bold text-gold mt-1">10:00 PM</span>
+                </div>
+
+                <div class="p-4 rounded-xl bg-obsidian-card/80 border border-gold/20 flex flex-col items-center justify-center">
+                    <i class="fa-solid fa-location-dot text-2xl text-gold mb-2"></i>
+                    <span class="text-[10px] uppercase font-cinzel tracking-widest text-gray-400">Ubicación</span>
+                    <span class="font-sans text-sm font-medium text-white mt-1">Calle 33 #286</span>
+                    <span class="font-sans text-xs text-gray-300">San Isidro</span>
+                    
+                    <a href="https://maps.app.goo.gl/8EM17UCXttqQLtDB6?g_st=iw" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       class="mt-3 inline-flex items-center gap-2 text-xs font-cinzel font-semibold text-black bg-gold hover:bg-gold-satin px-4 py-2 rounded-full transition-all duration-300 shadow-md hover:shadow-gold/30">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                        <span>UBICACIÓN EN GOOGLE MAPS</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- EVENT HIGHLIGHTS GRID -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <div class="p-4 rounded-xl bg-black/40 border border-gold/15 flex flex-col items-center text-center">
+                    <div class="w-10 h-10 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mb-3">
+                        <i class="fa-solid fa-headphones text-gold text-lg"></i>
+                    </div>
+                    <h3 class="font-cinzel text-sm font-bold text-gold mb-1">DJ EN VIVO</h3>
+                </div>
+
+                <div class="p-4 rounded-xl bg-black/40 border border-gold/15 flex flex-col items-center text-center">
+                    <div class="w-10 h-10 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mb-3">
+                        <i class="fa-solid fa-wine-bottle text-gold text-lg"></i>
+                    </div>
+                    <h3 class="font-cinzel text-sm font-bold text-gold mb-1">CORCHO LIBRE</h3>
+                    <p class="text-xs text-gray-400">Trae tu propio trago</p>
+                </div>
+
+                <div class="p-4 rounded-xl bg-black/40 border border-gold/15 flex flex-col items-center text-center">
+                    <div class="w-10 h-10 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mb-3">
+                        <i class="fa-solid fa-masks-theater text-gold text-lg"></i>
+                    </div>
+                    <h3 class="font-cinzel text-sm font-bold text-gold mb-1">DRESS CODE</h3>
+                    <p class="text-xs text-gray-300 font-semibold uppercase">Disfraz Obligatorio</p>
+                    <p class="text-[10px] text-gray-400 italic">High-Concept Costume Required</p>
+                </div>
+            </div>
+
+            <!-- CALL TO ACTION / RSVP SECTION -->
+            <div class="pt-6 border-t border-gold/20">
+                <p class="text-xs uppercase tracking-[0.25em] text-gray-300 mb-5 font-cinzel">
+                    Acceso Solo Con Invitación Previa
+                </p>
+
+                <div class="flex justify-center items-center">
+                    <button id="openRsvpBtn" onclick="openModal()" class="btn-gold-glow text-black font-cinzel font-bold text-xs sm:text-sm tracking-widest px-8 py-4 rounded-full uppercase shadow-xl inline-flex items-center gap-3">
+                        <i class="fa-solid fa-ticket text-lg"></i>
+                        <span>Generar Pase VIP Digital</span>
+                    </button>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="mt-8 text-center text-xs text-gray-500 font-cinzel tracking-widest">
+            <p>© 2026 HALLOWEEN EXCLUSIVE NIGHT • ALL RIGHTS RESERVED</p>
+        </footer>
+    </div>
+
+    <!-- RSVP MODAL -->
+    <div id="rsvpModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="glass-card max-w-md w-full rounded-2xl p-6 sm:p-8 relative border border-gold/40 shadow-2xl transform scale-95 transition-transform duration-300" id="modalContent">
+            
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gold text-lg w-8 h-8 rounded-full bg-black/40 flex items-center justify-center border border-gold/20">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <i class="fa-solid fa-key text-3xl text-gold mb-2"></i>
+                <h3 class="font-cinzel text-xl font-bold text-gold">REGISTRO DE INVITADO VIP</h3>
+                <p class="text-xs text-gray-400 font-sans mt-1">Ingresa tus datos para confirmar asistencia</p>
+            </div>
+
+            <form id="rsvpForm" onsubmit="handleRsvpSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-cinzel text-gray-300 uppercase tracking-wider mb-1">Nombre Completo</label>
+                    <input type="text" id="guestName" required placeholder="Ej. Valeria Mendoza" class="w-full bg-black/60 border border-gold/30 rounded-lg px-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-gold transition-colors">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-cinzel text-gray-300 uppercase tracking-wider mb-1">DNI / Teléfono</label>
+                    <input type="text" id="guestDocument" required placeholder="Ej. 72839401 / +51 987654321" class="w-full bg-black/60 border border-gold/30 rounded-lg px-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-gold transition-colors">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-cinzel text-gray-300 uppercase tracking-wider mb-1">Nombre de Acompañante (Opcional)</label>
+                    <input type="text" id="guestCompanion" placeholder="Ej. Carlos Silva (o Sin Acompañante)" class="w-full bg-black/60 border border-gold/30 rounded-lg px-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-gold transition-colors">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-cinzel text-gray-300 uppercase tracking-wider mb-1">Invitado por (Anfitrión / Referido)</label>
+                    <input type="text" id="guestHost" required placeholder="Ej. José Alegre" class="w-full bg-black/60 border border-gold/30 rounded-lg px-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-gold transition-colors">
+                </div>
+
+                <button type="submit" id="submitRsvpBtn" class="w-full btn-gold-glow text-black font-cinzel font-bold text-sm tracking-wider py-3.5 rounded-lg uppercase mt-3 flex items-center justify-center gap-2">
+                    <span id="btnText">Obtener Pase VIP</span>
+                    <i id="btnSpinner" class="fa-solid fa-spinner fa-spin hidden"></i>
+                </button>
+            </form>
+
+            <div id="ticketResult" class="hidden text-center space-y-4 py-2">
+                <div class="p-4 bg-black/60 border border-gold/40 rounded-xl relative overflow-hidden">
+                    <span class="text-[10px] uppercase tracking-[0.3em] text-emerald-400 font-bold block mb-1">
+                        <i class="fa-solid fa-circle-check"></i> Registro Confirmado en Lista VIP
+                    </span>
+                    <h4 id="passGuestName" class="font-cinzel text-lg font-bold text-gold">VALERIA MENDOZA</h4>
+                    <p id="passCompanion" class="text-xs text-gray-300">Acompañante: Carlos Silva</p>
+                    <p id="passHost" class="text-xs text-gold-light font-semibold mt-1">Invitado por: José Alegre</p>
+                    <p class="text-[10px] text-gray-400 mt-1">Acceso Individual/Doble • San Isidro</p>
+
+                    <div class="my-4 flex justify-center">
+                        <div class="p-3 bg-white rounded-lg shadow-inner">
+                            <img id="passQrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=HALLOWEEN-VIP-2026-SAN-ISIDRO" alt="VIP Pass QR" class="w-28 h-28">
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-gray-400 font-mono" id="passCode">CODE: HWN-2026-8839</p>
+                </div>
+
+                <p class="text-xs text-gray-400">Presenta este pase digital en la entrada.</p>
+
+                <button onclick="closeModal()" class="w-full bg-gold/20 hover:bg-gold/30 border border-gold/40 text-gold font-cinzel text-xs font-bold py-2.5 rounded-lg transition-colors">
+                    Cerrar
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Audio Player apuntando al archivo local sinpena.mp3 -->
+    <audio id="bgAudio" loop preload="auto">
+        <source src="sinpena.mp3#t=42" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNfS-Ivm8jL-fxmZ1cG-nT43kjy6z4Eb8hMcojHsevZc0XI0A6aUw9YlxEPLtbzQ3B/exec';
+
+        const eventDate = new Date('October 31, 2026 22:00:00').getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = eventDate - now;
+
+            if (distance < 0) {
+                document.getElementById('countdown').innerHTML = "<div class='col-span-4 text-gold font-cinzel text-lg'>¡EL EVENTO HA COMENZADO!</div>";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('days').innerText = String(days).padStart(2, '0');
+            document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+            document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        function openModal() {
+            const modal = document.getElementById('rsvpModal');
+            const content = document.getElementById('modalContent');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('rsvpModal');
+            const content = document.getElementById('modalContent');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+        }
+
+        async function handleRsvpSubmit(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitRsvpBtn');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+
+            const name = document.getElementById('guestName').value;
+            const doc = document.getElementById('guestDocument').value;
+            const companion = document.getElementById('guestCompanion').value || 'Sin Acompañante';
+            const host = document.getElementById('guestHost').value || 'No especificado';
+
+            btnText.innerText = 'Guardando Registro...';
+            btnSpinner.classList.remove('hidden');
+            submitBtn.disabled = true;
+
+            const payload = {
+                nombre: name,
+                documento: doc,
+                acompanante: companion,
+                invitadoPor: host
+            };
+
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (err) {
+                console.log('Submission complete', err);
+            }
+
+            document.getElementById('passGuestName').innerText = name.toUpperCase();
+            document.getElementById('passCompanion').innerText = 'Acompañante: ' + companion;
+            document.getElementById('passHost').innerText = 'Invitado por: ' + host;
+            
+            const passCodeStr = 'HWN-' + Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('passCode').innerText = 'CODE: ' + passCodeStr;
+            document.getElementById('passQrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=HALLOWEEN-${encodeURIComponent(name)}-${encodeURIComponent(host)}-${passCodeStr}`;
+
+            document.getElementById('rsvpForm').classList.add('hidden');
+            document.getElementById('ticketResult').classList.remove('hidden');
+
+            btnText.innerText = 'Obtener Pase VIP';
+            btnSpinner.classList.add('hidden');
+            submitBtn.disabled = false;
+        }
+
+        // MUSIC TOGGLE LOGIC CON INICIO EN EL SEGUNDO 42
+        const audio = document.getElementById('bgAudio');
+        const musicBtn = document.getElementById('musicToggle');
+        const musicStatus = document.getElementById('musicStatus');
+        let isPlaying = false;
+
+        musicBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                audio.pause();
+                musicStatus.innerText = 'Música OFF';
+                musicBtn.classList.remove('border-gold', 'bg-gold/20');
+            } else {
+                if (audio.currentTime < 42) {
+                    audio.currentTime = 42;
+                }
+                audio.play().then(() => {
+                    musicStatus.innerText = 'Música ON';
+                    musicBtn.classList.add('border-gold', 'bg-gold/20');
+                }).catch((err) => {
+                    console.log("Error de reproducción:", err);
+                });
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // GOLD DUST PARTICLES CANVAS ENGINE
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let particlesArray = [];
+        const numberOfParticles = 45;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.speedY = -Math.random() * 0.5 - 0.2;
+                this.opacity = Math.random() * 0.7 + 0.2;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.y < 0) {
+                    this.y = canvas.height;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(212, 175, 55, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        initParticles();
+        animateParticles();
+    </script>
+</body>
+</html>
